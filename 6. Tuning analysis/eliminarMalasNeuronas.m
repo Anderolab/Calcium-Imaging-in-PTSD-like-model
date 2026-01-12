@@ -1,0 +1,45 @@
+% ---------------------------------------------------------
+% Remove bad neurons based on previously saved indices
+% ---------------------------------------------------------------------
+% Inputs:
+% - Experiment: Structure containing the experiment data.
+
+function Experiment = eliminarMalasNeuronas(Experiment)
+
+    % Get the list of animals from the fields in Experiment.
+    animalNames = fieldnames(Experiment.OF);
+
+    % Base path where the good neuron indices are stored
+    basePath = '/Volumes/Leire RR/Minis/DLC/Good_Neurones_OF';
+
+    % Iterate over each animal
+    for i = 1:numel(animalNames)
+        animalName = animalNames{i};
+
+        % Get the number of neurons
+        numNeurons = size(Experiment.OF.(animalName).Filt, 1);
+
+        % Ask the user whether they want to remove the bad neurons for this animal
+        removeBadNeurons = input(['Do you want to remove artifacts for ' animalName '? (y/n): '], 'y');
+
+        % Load the good neuron indices for the current animal if required
+        if strcmpi(removeBadNeurons, 'y')
+            % Generate the full path to the good-neurons file
+            goodNeuronsFile = fullfile(basePath, ['good_neurons_' animalName '_index.mat']);
+
+            % Check whether the file exists
+            if exist(goodNeuronsFile, 'file')
+                % Load the good-neuron indices file
+                load(goodNeuronsFile, 'good_neurons_indices');
+
+                % Filter the neurons to include only the good ones
+                Experiment.OF.(animalName).Filt = Experiment.OF.(animalName).Filt(good_neurons_indices, :);
+                fprintf('Artifacts removed for %s. There are %d neurons left.\n', animalName, numel(good_neurons_indices));
+            else
+                warning('Good-neuron file not found for %s. No neurons were removed.', animalName);
+            end
+        else
+            fprintf('No artifacts were removed for %s. The original %d neurons were kept.\n', animalName, numNeurons);
+        end
+    end
+end
