@@ -1,7 +1,7 @@
 library(readxl)
 library(dplyr)
 library(purrr)
-
+# IMPORTANT: do not forget to change the TEST names in all the code 
 # Path to file
 archivo <- "F:/Ex3_BLA/Calcium RESULTS/CellREG/OR_SI_results/cell_reg_OR_SI_results.xlsx"
 
@@ -76,3 +76,4 @@ summary_counts <- merged_all %>%
   summarise(n = n(), .groups = "drop")
 
 print(summary_counts)
+
